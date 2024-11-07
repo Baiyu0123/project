@@ -12,8 +12,6 @@ See the Mulan PSL v2 for more details. */
 #include "common/log/log.h"
 #include "common/type/char_type.h"
 #include "common/value.h"
-#include <iostream>
-#include <iomanip>
 
 int CharType::compare(const Value &left, const Value &right) const
 {
@@ -69,10 +67,7 @@ int CharType::cast_cost(AttrType type)
 RC CharType::to_string(const Value &val, string &result) const
 {
   stringstream ss;
-  ss <<std::setw(4)<<std::setfill('0')<<val.value_.int_value_/10000<<'-'
-  << std::setw(2)<<std::setfill('0')<<val.value_.int_value_%10000/100<<'-'
-  << std::setw(2)<<std::setfill('0')<<val.value_.int_value_%100;
-  
+  ss<<val.value_.pointer_value_;
   result = ss.str();
   return RC::SUCCESS;
 }

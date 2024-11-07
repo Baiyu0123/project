@@ -126,7 +126,7 @@ void Value::set_data(char *data, int length)
       length_            = length;
     } break;
     case AttrType::DATES: {
-      value_.bool_value_ = *(int *)data != 0;
+      value_.int_value_ = *(int *)data;
       length_            = length;
     } break;
     
