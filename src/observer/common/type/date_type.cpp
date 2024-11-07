@@ -8,19 +8,20 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-#include "common/type/char_type.h"
-#include "common/type/float_type.h"
-#include "common/type/integer_type.h"
-#include "common/type/data_type.h"
-#include "common/type/vector_type.h"
+#include "common/lang/comparator.h"
+#include "common/lang/sstream.h"
+#include "common/log/log.h"
 #include "common/type/date_type.h"
+#include "common/value.h"
+int DateType::compare(const Value &left, const Value &right) const
+{
+  return common::compare_int((void*)&left.value_.int_value_,(void*)&right.value_.int_value_);
+}
 
-array<unique_ptr<DataType>, static_cast<int>(AttrType::MAXTYPE)> DataType::type_instances_ = {
-    make_unique<DataType>(AttrType::UNDEFINED),
-    make_unique<CharType>(),
-    make_unique<IntegerType>(),
-    make_unique<FloatType>(),
-    make_unique<DateType>(),
-    make_unique<VectorType>(),
-    make_unique<DataType>(AttrType::BOOLEANS),
-};
+RC DateType::to_string(const Value &val, string &result) const
+{
+  stringstream ss;
+  ss << val.value_.int_value_;
+  result = ss.str();
+  return RC::SUCCESS;
+}
