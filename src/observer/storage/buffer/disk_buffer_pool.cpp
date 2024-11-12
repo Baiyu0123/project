@@ -274,6 +274,10 @@ RC DiskBufferPool::open_file(const char *file_name)
   return RC::SUCCESS;
 }
 
+void DiskBufferPool::remove_file() {
+  bp_manager_.remove_file(file_name_.c_str());
+}
+
 RC DiskBufferPool::close_file()
 {
   RC rc = RC::SUCCESS;
@@ -885,7 +889,11 @@ RC BufferPoolManager::close_file(const char *_file_name)
   delete bp;
   return RC::SUCCESS;
 }
-
+void BufferPoolManager::remove_file(const char *_file_name)
+{
+  close_file(_file_name);
+  ::remove(_file_name);
+}
 RC BufferPoolManager::flush_page(Frame &frame)
 {
   int buffer_pool_id = frame.buffer_pool_id();
