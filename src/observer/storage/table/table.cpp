@@ -322,6 +322,19 @@ RC Table::make_record(int value_num, const Value *values, Record &record)
   record.set_data_owner(record_data, record_size);
   return RC::SUCCESS;
 }
+RC Table::update_record(Record &record, const FieldMeta *field,const Value &value)
+{
+  RC rc = RC::SUCCESS;
+  char *record_data = record.data();
+  rc = set_value_to_record(record_data,value,field);
+
+  if (OB_FAIL(rc)) {
+    LOG_WARN("failed to make record. table name:%s", table_meta_.name());
+    free(record_data);
+    return rc;
+  }
+  return RC::SUCCESS;
+}
 
 RC Table::set_value_to_record(char *record_data, const Value &value, const FieldMeta *field)
 {

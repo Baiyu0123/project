@@ -72,7 +72,7 @@ public:
    * @param record    生成的记录数据
    */
   RC make_record(int value_num, const Value *values, Record &record);
-
+  RC update_record(Record &record, const FieldMeta *field,const Value &value);
   /**
    * @brief 在当前的表中插入一条记录
    * @details 在表文件和索引中插入关联数据。这里只管在表中插入数据，不关心事务相关操作。
