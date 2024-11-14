@@ -322,19 +322,41 @@ RC Table::make_record(int value_num, const Value *values, Record &record)
   record.set_data_owner(record_data, record_size);
   return RC::SUCCESS;
 }
-RC Table::update_record(Record &record, const FieldMeta *field,const Value &value)
-{
-  RC rc = RC::SUCCESS;
-  char *record_data = record.data();
-  rc = set_value_to_record(record_data,value,field);
+// RC Table::update_record(Record &record, const FieldMeta *field,const Value &value)
+// {
+//   RC rc = RC::INVALID_ARGUMENT;
+//   const int normal_field_start_index = table_meta_.sys_field_num();
+//   // 复制所有字段的值
+//   int   record_size = table_meta_.record_size();
+//   char *record_data = record.data();
+  
+//   for (int i = 0; i + normal_field_start_index < table_meta_.field_num()&& OB_SUCC(rc); i++) {
+//     const FieldMeta *field_ = table_meta_.field(i + normal_field_start_index);
+//     if (strcmp(field_->name(), field->name()) ==0) {
+//       RC rc = RC::SUCCESS;
+//       if (field_->type() != value.attr_type()) {
+//         Value real_value;
+//         rc = Value::cast_to(value, field->type(), real_value);
+//         if (OB_FAIL(rc)) {
+//           LOG_WARN("failed to cast value. table name:%s,field name:%s,value:%s ",
+//               table_meta_.name(), field->name(), value.to_string().c_str());
+//           break;
+//         }
+//         rc = set_value_to_record(record_data, real_value, field_);
+//       } else {
+//         rc = set_value_to_record(record_data, value, field_);
+//       }
+//     }
+//   }
+//   if (OB_FAIL(rc)) {
+//     LOG_WARN("failed to make record. table name:%s", table_meta_.name());
+//     free(record_data);
+//     return rc;
+//   }
 
-  if (OB_FAIL(rc)) {
-    LOG_WARN("failed to make record. table name:%s", table_meta_.name());
-    free(record_data);
-    return rc;
-  }
-  return RC::SUCCESS;
-}
+//   record.set_data_owner(record_data, record_size);
+//   return RC::SUCCESS;
+// }
 
 RC Table::set_value_to_record(char *record_data, const Value &value, const FieldMeta *field)
 {
