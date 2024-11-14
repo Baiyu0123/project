@@ -46,7 +46,9 @@ RC UpdateStmt::create(Db *db, const UpdateSqlNode &update_sql, Stmt *&stmt)
   }
   const TableMeta &table_meta = table->table_meta();
   const FieldMeta *field  = table_meta.field(update_sql.attribute_name.c_str());
-  
+  if (field==nullptr) {
+    return RC::INVALID_ARGUMENT;
+  }
   stmt = new UpdateStmt(table,field,update_sql.value, filter_stmt);
   return rc;
 

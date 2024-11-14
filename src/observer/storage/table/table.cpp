@@ -322,18 +322,23 @@ RC Table::make_record(int value_num, const Value *values, Record &record)
   record.set_data_owner(record_data, record_size);
   return RC::SUCCESS;
 }
-// RC Table::update_record(Record &record, const FieldMeta *field,const Value &value)
+
+// RC Table::update_record(Record &new_record,RowTuple * row_tuple,const FieldMeta *field,const Value &value)
 // {
+//   Record   &record    = row_tuple->record();
+//   const FieldMeta * field_meta = table_meta_.field(field->name());
+
 //   RC rc = RC::INVALID_ARGUMENT;
 //   const int normal_field_start_index = table_meta_.sys_field_num();
 //   // 复制所有字段的值
 //   int   record_size = table_meta_.record_size();
-//   char *record_data = record.data();
+//   char *record_data = (char *)malloc(record_size);
+//   memset(record_data, 0, record_size);
   
 //   for (int i = 0; i + normal_field_start_index < table_meta_.field_num()&& OB_SUCC(rc); i++) {
 //     const FieldMeta *field_ = table_meta_.field(i + normal_field_start_index);
 //     if (strcmp(field_->name(), field->name()) ==0) {
-//       RC rc = RC::SUCCESS;
+//       rc = RC::SUCCESS;
 //       if (field_->type() != value.attr_type()) {
 //         Value real_value;
 //         rc = Value::cast_to(value, field->type(), real_value);
@@ -346,6 +351,9 @@ RC Table::make_record(int value_num, const Value *values, Record &record)
 //       } else {
 //         rc = set_value_to_record(record_data, value, field_);
 //       }
+//     } else {
+//       const Value &    value = values[i];
+//       rc = set_value_to_record(record_data, value, field);
 //     }
 //   }
 //   if (OB_FAIL(rc)) {
@@ -353,8 +361,7 @@ RC Table::make_record(int value_num, const Value *values, Record &record)
 //     free(record_data);
 //     return rc;
 //   }
-
-//   record.set_data_owner(record_data, record_size);
+//   new_record.set_data_owner(record_data, record_size);
 //   return RC::SUCCESS;
 // }
 
