@@ -118,11 +118,34 @@ ComparisonExpr::ComparisonExpr(CompOp comp, unique_ptr<Expression> left, unique_
 
 ComparisonExpr::~ComparisonExpr() {}
 
+bool dfs_like(string &s,string &t,int i,int j) {
+  if (i==s.size()&&j==t.size()) return 1;
+  if (i==s.size()&&t[j]=='%') return dfs_like(s,t,i,j+1);
+  if (i==s.size()||j==t.size()) return 0;
+  if (t[j]=='%') {
+    for (int k=i;k<=s.size();k++) {
+      if (dfs_like(s,t,k,j+1)) return 1;
+    }
+    return 0;
+  } 
+  if (s[i]==t[j]||t[j]=='_') return dfs_like(s,t,i+1,j+1);
+  return 0;
+}
+
 RC ComparisonExpr::compare_value(const Value &left, const Value &right, bool &result) const
 {
   RC  rc         = RC::SUCCESS;
   int cmp_result = left.compare(right);
   result         = false;
+  if (comp_==LIKE_OP||comp_==NOT_LIKE_OP) {
+    if (left.attr_type()!=AttrType::CHARS||right.attr_type()!=AttrType::CHARS)  
+      return RC::INVALID_ARGUMENT;
+    string s=left.get_string(),t=right.get_string();
+    int ret=dfs_like(s,t,0,0);
+    if (comp_==LIKE_OP) result=ret;
+    else result=!ret;
+    return rc;
+  }
   switch (comp_) {
     case EQUAL_TO: {
       result = (0 == cmp_result);

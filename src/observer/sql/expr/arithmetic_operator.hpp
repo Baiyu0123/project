@@ -32,6 +32,24 @@ struct Equal
   static inline __m256i operation(const __m256i &left, const __m256i &right) { return _mm256_cmpeq_epi32(left, right); }
 #endif
 };
+
+// struct Like_op
+// {
+//   template <class T>
+//   static inline bool operation(const T &left, const T &right)
+//   {
+//     return left == right;
+//   }
+// #if defined(USE_SIMD)
+//   static inline __m256 operation(const __m256 &left, const __m256 &right)
+//   {
+//     return _mm256_cmp_ps(left, right, _CMP_EQ_OS);
+//   }
+
+//   static inline __m256i operation(const __m256i &left, const __m256i &right) { return _mm256_cmpeq_epi32(left, right); }
+// #endif
+// };
+
 struct NotEqual
 {
   template <class T>
