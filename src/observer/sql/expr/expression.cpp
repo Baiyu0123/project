@@ -15,6 +15,7 @@ See the Mulan PSL v2 for more details. */
 #include "sql/expr/expression.h"
 #include "sql/expr/tuple.h"
 #include "sql/expr/arithmetic_operator.hpp"
+#include<cmath>
 
 using namespace std;
 
@@ -146,6 +147,15 @@ RC ComparisonExpr::compare_value(const Value &left, const Value &right, bool &re
     else result=!ret;
     return rc;
   }
+  if (left.attr_type()==AttrType::FLOATS&&std::isnan(left.get_float())) {
+    result=false;
+    return rc;
+  }
+  if (right.attr_type()==AttrType::FLOATS&&std::isnan(right.get_float())) {
+    result=false;
+    return rc;
+  }
+  
   switch (comp_) {
     case EQUAL_TO: {
       result = (0 == cmp_result);

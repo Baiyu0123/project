@@ -471,15 +471,17 @@ select_stmt:        /*  select 语句的语法解析树*/
         delete $2;
       }
 
-      if ($4 != nullptr) {
-        $$->selection.relations.swap(*$4);
-        delete $4;
-      }
-
       if ($5 != nullptr) {
         $$->selection.conditions.swap(*$5);
         delete $5;
       }
+      if ($4 != nullptr) {
+        $$->selection.relations.swap($4->first);
+        $$->selection.conditions.insert($$->selection.conditions.end(),$4->second.begin(),$4->second.end());
+        delete $4;
+      }
+
+      
 
       if ($6 != nullptr) {
         $$->selection.group_by.swap(*$6);
@@ -595,19 +597,17 @@ relation:
     ;
 rel_list:
     relation {
-      $$ = new std::vector<std::string>();
-      $$->push_back($1);
-      free($1);
+      $$ =$1;
     }
     | relation COMMA rel_list {
       if ($3 != nullptr) {
         $$ = $3;
+        $$->first.insert($$->first.end(),$1->first.begin(),$1->first.end());
+        $$->second.insert($$->second.end(),$1->second.begin(),$1->second.end());
+        delete $1;
       } else {
-        $$ = new std::vector<std::string>;
+        $$ = $1;
       }
-
-      $$->insert($$->begin(), $1);
-      free($1);
     }
     ;
 
