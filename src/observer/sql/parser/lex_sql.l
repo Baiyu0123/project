@@ -104,6 +104,7 @@ MAX                                   RETURN_TOKEN(MAX);
 MIN                                   RETURN_TOKEN(MIN);
 AVG                                   RETURN_TOKEN(AVG);
 SUM                                   RETURN_TOKEN(SUM);
+JOIN                                   RETURN_TOKEN(JOIN);
 NOT                                     RETURN_TOKEN(NOT);
 LIKE                                    RETURN_TOKEN(LIKE);
 INTO                                    RETURN_TOKEN(INTO);

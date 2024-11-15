@@ -83,6 +83,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
         MIN
         AVG
         SUM
+        JOIN
         NOT
         LIKE
         DELETE
@@ -580,6 +581,11 @@ relation:
     ID {
       $$ = $1;
     }
+    |
+    relation JOIN ID ON condition_list {
+      
+    }
+
     ;
 rel_list:
     relation {
