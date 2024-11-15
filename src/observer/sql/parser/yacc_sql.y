@@ -136,7 +136,10 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
   std::vector<Value> *                       value_list;
   std::vector<ConditionSqlNode> *            condition_list;
   std::vector<RelAttrSqlNode> *              rel_attr_list;
-  std::vector<std::string> *                 relation_list;
+  std::pair<std::vector<std::string>,std::vector<ConditionSqlNode>> *
+                                             rela;
+  
+  
   char *                                     string;
   int                                        number;
   float                                      floats;
@@ -153,7 +156,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
 %type <condition>           condition
 %type <value>               value
 %type <number>              number
-%type <string>              relation
+%type <rela>              relation
 %type <comp>                comp_op
 %type <rel_attr>            rel_attr
 %type <attr_infos>          attr_def_list
@@ -162,7 +165,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
 %type <condition_list>      where
 %type <condition_list>      condition_list
 %type <string>              storage_format
-%type <relation_list>       rel_list
+%type <rela>       rel_list
 %type <expression>          expression
 %type <expression_list>     expression_list
 %type <expression_list>     group_by
@@ -579,11 +582,14 @@ rel_attr:
 
 relation:
     ID {
-      $$ = $1;
+      $$ = new std::pair<std::vector<std::string>,std::vector<ConditionSqlNode>>;
+      $$->first.emplace_back($1);
     }
     |
     relation JOIN ID ON condition_list {
-      
+      $$ = $1;
+      $$->first.emplace_back($3);
+      $$->second.insert($$->second.end(),$5->begin(),$5->end());
     }
 
     ;
