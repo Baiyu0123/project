@@ -84,6 +84,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
         AVG
         SUM
         JOIN
+        INNER
         NOT
         LIKE
         DELETE
@@ -588,10 +589,10 @@ relation:
       $$->first.emplace_back($1);
     }
     |
-    relation JOIN ID ON condition_list {
+    relation INNER JOIN ID ON condition_list {
       $$ = $1;
-      $$->first.emplace_back($3);
-      $$->second.insert($$->second.end(),$5->begin(),$5->end());
+      $$->first.emplace_back($4);
+      $$->second.insert($$->second.end(),$6->begin(),$6->end());
     }
 
     ;

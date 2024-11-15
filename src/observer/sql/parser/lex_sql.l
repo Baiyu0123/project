@@ -105,6 +105,7 @@ MIN                                   RETURN_TOKEN(MIN);
 AVG                                   RETURN_TOKEN(AVG);
 SUM                                   RETURN_TOKEN(SUM);
 JOIN                                   RETURN_TOKEN(JOIN);
+INNER                                   RETURN_TOKEN(INNER);
 NOT                                     RETURN_TOKEN(NOT);
 LIKE                                    RETURN_TOKEN(LIKE);
 INTO                                    RETURN_TOKEN(INTO);
