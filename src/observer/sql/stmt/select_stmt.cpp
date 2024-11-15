@@ -88,6 +88,27 @@ RC SelectStmt::create(Db *db, SelectSqlNode &select_sql, Stmt *&stmt)
   }
 
   // create filter statement in `where` statement
+  vector<unique_ptr<Expression>> bound_condition_expressions;
+  
+  for (ConditionSqlNode &condition : select_sql.conditions) {
+    unique_ptr<Expression> left_expr_(condition.left_expr);
+    RC rc = expression_binder.bind_expression(left_expr_, bound_condition_expressions);
+    if (OB_FAIL(rc)) {
+      LOG_INFO("bind expression failed. rc=%s", strrc(rc));
+      return rc;
+    }
+    unique_ptr<Expression> new_left_expr=std::move(bound_condition_expressions.back());
+    condition.left_expr=new_left_expr.release();
+    
+    unique_ptr<Expression> right_expr_(condition.right_expr);
+    rc = expression_binder.bind_expression(right_expr_, bound_condition_expressions);
+    if (OB_FAIL(rc)) {
+      LOG_INFO("bind expression failed. rc=%s", strrc(rc));
+      return rc;
+    }
+    unique_ptr<Expression> new_right_expr=std::move(bound_condition_expressions.back());
+    condition.right_expr=new_right_expr.release();
+  }
   FilterStmt *filter_stmt = nullptr;
   RC          rc          = FilterStmt::create(db,
       default_table,

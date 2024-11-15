@@ -17,30 +17,18 @@ See the Mulan PSL v2 for more details. */
 #include "sql/expr/expression.h"
 #include "sql/parser/parse_defs.h"
 #include "sql/stmt/stmt.h"
+#include "sql/expr/expression.h"
 #include <unordered_map>
 #include <vector>
 
 class Db;
 class Table;
 class FieldMeta;
-
 struct FilterObj
 {
-  bool  is_attr;
-  Field field;
-  Value value;
-
-  void init_attr(const Field &field)
-  {
-    is_attr     = true;
-    this->field = field;
-  }
-
-  void init_value(const Value &value)
-  {
-    is_attr     = false;
-    this->value = value;
-  }
+  Expression* expr;
+  FilterObj() =default;
+  FilterObj(Expression * expr_) : expr(expr_) {}
 };
 
 class FilterUnit
@@ -56,9 +44,11 @@ public:
   void set_left(const FilterObj &obj) { left_ = obj; }
   void set_right(const FilterObj &obj) { right_ = obj; }
 
+  // FilterObj left() const { return left_; }
+  // FilterObj right() const { return right_; }
   const FilterObj &left() const { return left_; }
   const FilterObj &right() const { return right_; }
-
+  
 private:
   CompOp    comp_ = NO_OP;
   FilterObj left_;
