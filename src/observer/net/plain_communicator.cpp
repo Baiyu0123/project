@@ -279,6 +279,7 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
   int cnt=0;
   while (RC::SUCCESS == (rc = sql_result->next_tuple(tuple))) {
     assert(tuple != nullptr);
+    string s;
     if (order_by!=nullptr) {
       tuples.push_back(std::make_pair(tuple->clone(),++cnt));
       continue;
@@ -286,14 +287,14 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
     int cell_num = tuple->cell_num();
     for (int i = 0; i < cell_num; i++) {
       if (i != 0) {
-        const char *delim = " | ";
-
-        rc = writer_->writen(delim, strlen(delim));
-        if (OB_FAIL(rc)) {
-          LOG_WARN("failed to send data to client. err=%s", strerror(errno));
-          sql_result->close();
-          return rc;
-        }
+        //const char *delim = " | ";
+        s+=" | ";
+        // rc = writer_->writen(delim, strlen(delim));
+        // if (OB_FAIL(rc)) {
+        //   LOG_WARN("failed to send data to client. err=%s", strerror(errno));
+        //   sql_result->close();
+        //   return rc;
+        // }
       }
 
       Value value;
@@ -304,19 +305,25 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
         return rc;
       }
 
-      string cell_str = value.to_string();
+      s+= value.to_string();
 
-      rc = writer_->writen(cell_str.data(), cell_str.size());
-      if (OB_FAIL(rc)) {
-        LOG_WARN("failed to send data to client. err=%s", strerror(errno));
-        sql_result->close();
-        return rc;
-      }
+//      rc = writer_->writen(cell_str.data(), cell_str.size());
+      // if (OB_FAIL(rc)) {
+      //   LOG_WARN("failed to send data to client. err=%s", strerror(errno));
+      //   sql_result->close();
+      //   return rc;
+      // }
     }
 
     char newline = '\n';
-
+    s+='\n';
     rc = writer_->writen(&newline, 1);
+    if (OB_FAIL(rc)) {
+      LOG_WARN("failed to send data to client. err=%s", strerror(errno));
+      sql_result->close();
+      return rc;
+    }
+    rc = writer_->writen(s.data(), s.size());
     if (OB_FAIL(rc)) {
       LOG_WARN("failed to send data to client. err=%s", strerror(errno));
       sql_result->close();
@@ -340,10 +347,7 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
       return (bool)(x.second<y.second);
     });
   } else {
-    if (rc == RC::RECORD_EOF) {
-      rc = RC::SUCCESS;
-    }
-    return rc;
+    return RC::SUCCESS;
   }
   for (pair<Tuple*,int> pair_:tuples) {
     Tuple *tuple = pair_.first;
@@ -387,10 +391,7 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
       return rc;
     }
   }
-  if (rc == RC::RECORD_EOF) {
-    rc = RC::SUCCESS;
-  }
-  return rc;
+  rc = RC::SUCCESS;
 }
 
 RC PlainCommunicator::write_chunk_result(SqlResult *sql_result)
