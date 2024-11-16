@@ -177,16 +177,17 @@ public:
   Tuple* clone() const override {
     return new RowTuple(*this);
   }
-  void set_record(Record *record) { this->record_ = record; }
+  void set_record(Record *record) { this->record_ = *record; }
 
   void set_schema(const Table *table, const std::vector<FieldMeta> *fields)
   {
     table_ = table;
     // fix:join当中会多次调用右表的open,open当中会调用set_scheme，从而导致tuple当中会存储
     // 很多无意义的field和value，因此需要先clear掉
-    for (FieldExpr *spec : speces_) {
-      delete spec;
-    }
+    // return ;
+    // for (FieldExpr *spec : speces_) {
+    //   delete spec;
+    // }
     this->speces_.clear();
     this->speces_.reserve(fields->size());
     for (const FieldMeta &field : *fields) {
@@ -206,7 +207,7 @@ public:
     FieldExpr       *field_expr = speces_[index];
     const FieldMeta *field_meta = field_expr->field().meta();
     cell.set_type(field_meta->type());
-    cell.set_data(this->record_->data() + field_meta->offset(), field_meta->len());
+    cell.set_data(this->record_.data() + field_meta->offset(), field_meta->len());
     return RC::SUCCESS;
   }
 
@@ -247,12 +248,12 @@ public:
   }
 #endif
 
-  Record &record() { return *record_; }
+  Record &record() { return record_; }
 
-  const Record &record() const { return *record_; }
+  const Record &record() const { return record_; }
 
 private:
-  Record                  *record_ = nullptr;
+  Record                  record_ ;
   const Table             *table_  = nullptr;
   std::vector<FieldExpr *> speces_;
 };
