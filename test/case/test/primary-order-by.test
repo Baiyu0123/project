@@ -1,22 +1,42 @@
 -- echo 1. create table
 create table t_order_by(id int, score float, name char);
-create table t_order_by_2(id int, age int);
+create table t_order_by_3(id int, age int);
 
 -- echo 2. insert records
-insert into t_order_by values(3, 1.0, 'a');
-insert into t_order_by values(1, 2.0, 'b');
-insert into t_order_by values(4, 3.0, 'c');
-insert into t_order_by values(3, 2.0, 'c');
-insert into t_order_by values(3, 4.0, 'c');
-insert into t_order_by values(3, 3.0, 'd');
-insert into t_order_by values(3, 2.0, 'f');
+insert into t_order_by2 values(3, 1.0, 'a');
+insert into t_order_by2 values(1, 2.0, 'b');
+insert into t_order_by2 values(4, 3.0, 'c');
+insert into t_order_by2 values(3, 2.0, 'c');
+insert into t_order_by2 values(3, 4.0, 'c');
+insert into t_order_by2 values(3, 3.0, 'd');
+insert into t_order_by2 values(3, 2.0, 'f');
 
-insert into t_order_by_2 values(1, 10);
-insert into t_order_by_2 values(2, 20);
-insert into t_order_by_2 values(3, 10);
-insert into t_order_by_2 values(3, 20);
-insert into t_order_by_2 values(3, 40);
-insert into t_order_by_2 values(4, 20);
+insert into t_order_by_3 values(1, 10);
+insert into t_order_by_3 values(2, 20);
+insert into t_order_by_3 values(3, 10);
+insert into t_order_by_3 values(3, 20);
+insert into t_order_by_3 values(3, 40);
+insert into t_order_by_3 values(4, 20);
+
+select * from t_order_by_1, t_order_by_2 where t_order_by_1.id=t_order_by_2.id order by t_order_by_1.id, t_order_by_2.id desc, t_order_by_2.score asc, t_order_by_2.name;
+- 1 | 1 | 2.12 | 64G
+- 1 | 1 | 2.15 | 64
+- 2 | 2 | 4.61 | R18
+- 2 | 2 | 4.61 | R18
+- 3 | 3 | 1.94 | J15N
+- 3 | 3 | 4.07 | V
+- 3 | 3 | 4.27 | L
+- 3 | 3 | 4.43 | 09
+- 4 | 4 | 1.25 | THR
+- 4 | 4 | 1.25 | THR
+- 4 | 4 | 2.32 | I5AQ
+- 4 | 4 | 2.32 | I5AQ
+- 4 | 4 | 4.16 | 8P
+create table t_order_by_1(id int);
+create table t_order_by_2(id int, score float, name char(4));
+insert into t_order_by_1 VALUES (1);
+insert into t_order_by_1 VALUES (2);
+insert into t_order_by_1 VALUES (8);
 
 -- echo 3. primary order by
 -- sort select * from t_order_by order by id;
