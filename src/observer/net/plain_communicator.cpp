@@ -274,9 +274,12 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
 {
   RC rc = RC::SUCCESS;
   Tuple *tuple = nullptr;
+  vector<pair<Tuple*,int>> tuples;
+  std::vector<std::pair<Expression*,bool> > *order_by=sql_result->get_order_by();
+  int cnt=0;
   while (RC::SUCCESS == (rc = sql_result->next_tuple(tuple))) {
     assert(tuple != nullptr);
-
+    tuples.push_back(std::make_pair(tuple->clone(),++cnt));
     int cell_num = tuple->cell_num();
     for (int i = 0; i < cell_num; i++) {
       if (i != 0) {
@@ -317,7 +320,65 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
       return rc;
     }
   }
+  //return RC::SUCCESS;
+  if (order_by!=nullptr) {
+    sort(tuples.begin(),tuples.end(),[order_by](const pair<Tuple*,int> &x,const pair<Tuple*,int> &y) {
+      for (std::pair<Expression*,bool> pair_:*order_by) {
+        Value valuex;
+        pair_.first->get_value(*(x.first),valuex);
+        Value valuey;
+        pair_.first->get_value(*(y.first),valuey);
+        int ret=valuex.compare(valuey);
+        if (ret<0&&pair_.second) return (bool)1;
+        if (ret<0&&!pair_.second) return (bool)0;
+        if (ret>0&&pair_.second) return (bool)0;
+        if (ret>0&&!pair_.second) return (bool)1;
+      }
+      return (bool)(x.second<y.second);
+    });
+  }
+  for (pair<Tuple*,int> pair_:tuples) {
+    Tuple *tuple = pair_.first;
+    int cell_num = tuple->cell_num();
+    for (int i = 0; i < cell_num; i++) {
+      if (i != 0) {
+        const char *delim = " | ";
 
+        rc = writer_->writen(delim, strlen(delim));
+        if (OB_FAIL(rc)) {
+          LOG_WARN("failed to send data to client. err=%s", strerror(errno));
+          sql_result->close();
+          return rc;
+        }
+      }
+
+      Value value;
+      rc = tuple->cell_at(i, value);
+      if (rc != RC::SUCCESS) {
+        LOG_WARN("failed to get tuple cell value. rc=%s", strrc(rc));
+        sql_result->close();
+        return rc;
+      }
+
+      string cell_str = value.to_string();
+
+      rc = writer_->writen(cell_str.data(), cell_str.size());
+      if (OB_FAIL(rc)) {
+        LOG_WARN("failed to send data to client. err=%s", strerror(errno));
+        sql_result->close();
+        return rc;
+      }
+    }
+
+    char newline = '\n';
+
+    rc = writer_->writen(&newline, 1);
+    if (OB_FAIL(rc)) {
+      LOG_WARN("failed to send data to client. err=%s", strerror(errno));
+      sql_result->close();
+      return rc;
+    }
+  }
   if (rc == RC::RECORD_EOF) {
     rc = RC::SUCCESS;
   }

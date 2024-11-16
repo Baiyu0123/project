@@ -51,6 +51,10 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
   return expr;
 }
 
+bool to_bool(int x) {
+  return x;
+}
+
 %}
 
 %define api.pure full
@@ -85,6 +89,8 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
         SUM
         JOIN
         INNER
+        ORDER
+        ASC
         NOT
         LIKE
         DELETE
@@ -139,7 +145,8 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
   std::vector<RelAttrSqlNode> *              rel_attr_list;
   std::pair<std::vector<std::string>,std::vector<ConditionSqlNode>> *
                                              rela;
-  
+  std::pair<Expression*,bool> *                pr_eb;
+  std::vector<std::pair<Expression*,bool>> *  v_pr_eb;
   
   char *                                     string;
   int                                        number;
@@ -164,6 +171,9 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
 %type <attr_info>           attr_def
 %type <value_list>          value_list
 %type <condition_list>      where
+%type <v_pr_eb>             ord
+%type <pr_eb>             pr_eb
+%type <v_pr_eb>             v_pr_eb
 %type <condition_list>      condition_list
 %type <string>              storage_format
 %type <rela>       rel_list
@@ -464,7 +474,7 @@ update_stmt:      /*  update 语句的语法解析树*/
     }
     ;
 select_stmt:        /*  select 语句的语法解析树*/
-    SELECT expression_list FROM rel_list where group_by
+    SELECT expression_list FROM rel_list where group_by ord
     {
       $$ = new ParsedSqlNode(SCF_SELECT);
       if ($2 != nullptr) {
@@ -488,6 +498,11 @@ select_stmt:        /*  select 语句的语法解析树*/
         $$->selection.group_by.swap(*$6);
         delete $6;
       }
+      if ($7 != nullptr) {
+        $$->selection.order_by.swap(*$7);
+        delete $7;
+      }
+      
     }
     ;
 calc_stmt:
@@ -620,6 +635,48 @@ where:
     | WHERE condition_list {
       $$ = $2;  
     }
+    ;
+    
+pr_eb:
+    expression {
+      $$ = new(std::pair<Expression*,bool>);
+      $$->first=$1;
+      $$->second=true;
+    }
+    | expression ASC{
+      $$ = new(std::pair<Expression*,bool>);
+      $$->first=$1;
+      $$->second=true;
+    }
+    | expression DESC{
+      $$ = new(std::pair<Expression*,bool>);
+      $$->first=$1;
+      $$->second=false;
+    }
+    
+    ;
+
+v_pr_eb:
+    pr_eb {
+      $$ = new(std::vector<std::pair<Expression*,bool>>);
+      $$->emplace_back(*$1);
+    }
+    | v_pr_eb COMMA pr_eb {
+      $$=$1;
+      $$->emplace_back(*$3);
+    }
+    
+    ;
+
+ord:
+    /* empty */
+    {
+      $$ = nullptr;
+    }
+    | ORDER BY v_pr_eb {
+      $$=$3;
+    }
+    
     ;
 condition_list:
     /* empty */

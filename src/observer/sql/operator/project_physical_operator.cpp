@@ -23,6 +23,12 @@ ProjectPhysicalOperator::ProjectPhysicalOperator(vector<unique_ptr<Expression>> 
   : expressions_(std::move(expressions)), tuple_(expressions_)
 {
 }
+ProjectPhysicalOperator::ProjectPhysicalOperator(vector<unique_ptr<Expression>> &&expressions,
+  std::vector<std::pair<Expression*,bool> > order_by)
+  : expressions_(std::move(expressions)), tuple_(expressions_),
+  order_by_(order_by)
+{
+}
 
 RC ProjectPhysicalOperator::open(Trx *trx)
 {
@@ -67,4 +73,7 @@ RC ProjectPhysicalOperator::tuple_schema(TupleSchema &schema) const
     schema.append_cell(expression->name());
   }
   return RC::SUCCESS;
+}
+std::vector<std::pair<Expression*,bool> > * ProjectPhysicalOperator::get_order_by() {
+  return &order_by_;
 }

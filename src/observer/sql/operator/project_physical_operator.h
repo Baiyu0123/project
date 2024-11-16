@@ -25,7 +25,8 @@ class ProjectPhysicalOperator : public PhysicalOperator
 {
 public:
   ProjectPhysicalOperator(std::vector<std::unique_ptr<Expression>> &&expressions);
-
+  ProjectPhysicalOperator(std::vector<std::unique_ptr<Expression>> &&expressions,
+    std::vector<std::pair<Expression*,bool> > order_by);
   virtual ~ProjectPhysicalOperator() = default;
 
   PhysicalOperatorType type() const override { return PhysicalOperatorType::PROJECT; }
@@ -40,7 +41,10 @@ public:
 
   RC tuple_schema(TupleSchema &schema) const override;
 
+  std::vector<std::pair<Expression*,bool> > * get_order_by() override;
+
 private:
   std::vector<std::unique_ptr<Expression>>     expressions_;
   ExpressionTuple<std::unique_ptr<Expression>> tuple_;
+  std::vector<std::pair<Expression*,bool> > order_by_;
 };

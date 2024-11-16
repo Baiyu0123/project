@@ -84,7 +84,6 @@ QUOTE            [\'\"]
 {DOT}                                   RETURN_TOKEN(DOT);
 EXIT                                    RETURN_TOKEN(EXIT);
 HELP                                    RETURN_TOKEN(HELP);
-DESC                                    RETURN_TOKEN(DESC);
 CREATE                                  RETURN_TOKEN(CREATE);
 DROP                                    RETURN_TOKEN(DROP);
 TABLE                                   RETURN_TOKEN(TABLE);
@@ -106,6 +105,9 @@ AVG                                   RETURN_TOKEN(AVG);
 SUM                                   RETURN_TOKEN(SUM);
 JOIN                                   RETURN_TOKEN(JOIN);
 INNER                                   RETURN_TOKEN(INNER);
+ORDER                                   RETURN_TOKEN(ORDER);
+ASC                                   RETURN_TOKEN(ASC);
+DESC                                   RETURN_TOKEN(DESC);
 NOT                                     RETURN_TOKEN(NOT);
 LIKE                                    RETURN_TOKEN(LIKE);
 INTO                                    RETURN_TOKEN(INTO);

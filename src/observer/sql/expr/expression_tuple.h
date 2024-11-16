@@ -25,6 +25,9 @@ class ExpressionTuple : public Tuple
 {
 public:
   ExpressionTuple(const std::vector<ExprPointerType> &expressions) : expressions_(expressions) {}
+  ExpressionTuple(const std::vector<ExprPointerType> &expressions,const Tuple * tuple) 
+  : expressions_(expressions),child_tuple_(tuple) {}
+  
   virtual ~ExpressionTuple() = default;
 
   void set_tuple(const Tuple *tuple) { child_tuple_ = tuple; }
@@ -72,7 +75,10 @@ public:
 
     return rc;
   }
-
+  Tuple* clone() const override  {
+    ExpressionTuple * tuple=new ExpressionTuple(expressions_,child_tuple_->clone());
+    return tuple;
+  }
 private:
   RC get_value(const ExprPointerType &expression, Value &value) const
   {

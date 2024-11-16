@@ -152,6 +152,10 @@ public:
     result = 0;
     return rc;
   }
+  virtual Tuple* clone() const{
+    assert(false);
+    return nullptr;
+  }
 };
 
 /**
@@ -170,7 +174,9 @@ public:
     }
     speces_.clear();
   }
-
+  Tuple* clone() const override {
+    return new RowTuple(*this);
+  }
   void set_record(Record *record) { this->record_ = record; }
 
   void set_schema(const Table *table, const std::vector<FieldMeta> *fields)
@@ -294,7 +300,12 @@ public:
   }
 
   RC find_cell(const TupleCellSpec &spec, Value &cell) const override { return tuple_->find_cell(spec, cell); }
-
+  // Tuple* clone() override {
+  //   ProjectTuple * tuple=new ProjectTuple(*this);
+  // //  tuple->tuple_=tuple->tuple_->clone();
+  //   return tuple;
+  // }
+  
 #if 0
   RC cell_spec_at(int index, const TupleCellSpec *&spec) const override
   {
@@ -381,7 +392,10 @@ public:
     }
     return RC::SUCCESS;
   }
-
+  Tuple* clone() const override {
+    ValueListTuple * tuple=new ValueListTuple(*this);
+    return tuple;
+  }
 private:
   std::vector<Value>         cells_;
   std::vector<TupleCellSpec> specs_;
@@ -441,7 +455,13 @@ public:
 
     return right_->find_cell(spec, value);
   }
-
+  Tuple* clone() const override {
+    JoinedTuple * tuple=new JoinedTuple(*this);
+    tuple->left_=tuple->left_->clone();
+    tuple->right_=tuple->right_->clone();
+    
+    return tuple;
+  }
 private:
   Tuple *left_  = nullptr;
   Tuple *right_ = nullptr;

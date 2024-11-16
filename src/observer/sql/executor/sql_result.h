@@ -45,7 +45,7 @@ public:
   const TupleSchema &tuple_schema() const { return tuple_schema_; }
   RC                 return_code() const { return return_code_; }
   const std::string &state_string() const { return state_string_; }
-
+  std::vector<std::pair<Expression*,bool> > * get_order_by();
   RC open();
   RC close();
   RC next_tuple(Tuple *&tuple);

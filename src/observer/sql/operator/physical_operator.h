@@ -84,6 +84,10 @@ public:
 
   virtual Tuple *current_tuple() { return nullptr; }
 
+  virtual std::vector<std::pair<Expression*,bool> > * get_order_by() {
+    return nullptr;
+  }
+
   virtual RC tuple_schema(TupleSchema &schema) const { return RC::UNIMPLEMENTED; }
 
   void add_child(std::unique_ptr<PhysicalOperator> oper) { children_.emplace_back(std::move(oper)); }

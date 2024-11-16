@@ -81,3 +81,7 @@ void SqlResult::set_operator(std::unique_ptr<PhysicalOperator> oper)
   operator_ = std::move(oper);
   operator_->tuple_schema(tuple_schema_);
 }
+std::vector<std::pair<Expression*,bool> > * SqlResult::get_order_by() {
+ if (operator_==nullptr) return nullptr;
+ return operator_->get_order_by();
+}

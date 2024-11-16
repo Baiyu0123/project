@@ -20,6 +20,8 @@ See the Mulan PSL v2 for more details. */
 #include "sql/expr/expression.h"
 #include "sql/operator/logical_operator.h"
 #include "storage/field/field.h"
+//std::_MakeUniq<ProjectLogicalOperator>::__single_object std::make_unique<ProjectLogicalOperator, std::vector<std::unique_ptr<Expression, std::default_delete<Expression> >, std::allocator<std::unique_ptr<Expression, std::default_delete<Expression> > > >, std::vector<std::pair<Expression*, bool>, std::allocator<std::pair<Expression*, bool> > >&>(std::vector<std::unique_ptr<Expression, std::default_delete<Expression> >, std::allocator<std::unique_ptr<Expression, std::default_delete<Expression> > > >&&, std::vector<std::pair<Expression*, bool>, std::allocator<std::pair<Expression*, bool> > >&)':
+///usr/include/c++/11/bits/unique_ptr.h:962: undefined reference to `ProjectLogicalOperator::ProjectLogicalOperator(std::vector<std::unique_ptr<Expression, std::default_delete<Expression> >, std::allocator<std::unique_ptr<Expression, std::default_delete<Expression> > > >&&, std::vector<std::pair<Expression*, bool>, std::allocator<std::pair<Expression*, bool> > >&)
 
 /**
  * @brief project 表示投影运算
@@ -30,10 +32,11 @@ class ProjectLogicalOperator : public LogicalOperator
 {
 public:
   ProjectLogicalOperator(std::vector<std::unique_ptr<Expression>> &&expressions);
+  ProjectLogicalOperator(std::vector<std::unique_ptr<Expression>> &&expressions,std::vector<std::pair<Expression*,bool> > order_by);
+  
   virtual ~ProjectLogicalOperator() = default;
 
   LogicalOperatorType type() const override { return LogicalOperatorType::PROJECTION; }
-
   std::vector<std::unique_ptr<Expression>>       &expressions() { return expressions_; }
   const std::vector<std::unique_ptr<Expression>> &expressions() const { return expressions_; }
 };

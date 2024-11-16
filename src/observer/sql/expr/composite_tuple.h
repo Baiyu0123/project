@@ -26,7 +26,14 @@ class CompositeTuple : public Tuple
 public:
   CompositeTuple()          = default;
   virtual ~CompositeTuple() = default;
-
+  Tuple* clone() const override  {
+    CompositeTuple * tuple=new CompositeTuple();
+    for (int i=0;i<tuples_.size();i++) {
+      tuple->tuples_.push_back(std::unique_ptr<Tuple>(tuples_[i]->clone()));
+    }
+    
+    return tuple;
+  }
   /// @brief 删除默认构造函数
   CompositeTuple(const CompositeTuple &) = delete;
   /// @brief 删除默认赋值函数

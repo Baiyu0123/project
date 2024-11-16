@@ -123,11 +123,26 @@ RC SelectStmt::create(Db *db, SelectSqlNode &select_sql, Stmt *&stmt)
 
   // everything alright
   SelectStmt *select_stmt = new SelectStmt();
+  
+  std::vector<std::pair<Expression*,bool> >  order_by_expressions;
+  vector<unique_ptr<Expression>>  order_by_expressions_;
+  
+  for (std::pair<Expression*,bool>  &pair_ : select_sql.order_by) {
+    unique_ptr<Expression> expression(pair_.first);
+    RC rc = expression_binder.bind_expression(expression, order_by_expressions_);
+    if (OB_FAIL(rc)) {
+      LOG_INFO("bind expression failed. rc=%s", strrc(rc));
+      return rc;
+    }
+    order_by_expressions.push_back(std::make_pair(order_by_expressions_.back().release(),pair_.second));
+  }
+  
 
   select_stmt->tables_.swap(tables);
   select_stmt->query_expressions_.swap(bound_expressions);
   select_stmt->filter_stmt_ = filter_stmt;
   select_stmt->group_by_.swap(group_by_expressions);
+  select_stmt->order_by_.swap(order_by_expressions);
   stmt                      = select_stmt;
   return RC::SUCCESS;
 }

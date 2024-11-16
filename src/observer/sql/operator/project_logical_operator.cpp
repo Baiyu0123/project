@@ -20,3 +20,8 @@ ProjectLogicalOperator::ProjectLogicalOperator(vector<unique_ptr<Expression>> &&
 {
   expressions_ = std::move(expressions);
 }
+ProjectLogicalOperator::ProjectLogicalOperator(vector<unique_ptr<Expression>> &&expressions,std::vector<std::pair<Expression*,bool> > order_by)
+{
+  expressions_ = std::move(expressions);
+  order_by_=order_by;
+}
