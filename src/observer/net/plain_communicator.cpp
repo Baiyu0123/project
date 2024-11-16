@@ -279,8 +279,10 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
   int cnt=0;
   while (RC::SUCCESS == (rc = sql_result->next_tuple(tuple))) {
     assert(tuple != nullptr);
-    tuples.push_back(std::make_pair(tuple->clone(),++cnt));
-    if (order_by!=nullptr) continue;
+    if (order_by!=nullptr) {
+      tuples.push_back(std::make_pair(tuple->clone(),++cnt));
+      continue;
+    }
     int cell_num = tuple->cell_num();
     for (int i = 0; i < cell_num; i++) {
       if (i != 0) {
@@ -337,7 +339,12 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
       }
       return (bool)(x.second<y.second);
     });
-  } else return rc;
+  } else {
+    if (rc == RC::RECORD_EOF) {
+      rc = RC::SUCCESS;
+    }
+    return rc;
+  }
   for (pair<Tuple*,int> pair_:tuples) {
     Tuple *tuple = pair_.first;
     int cell_num = tuple->cell_num();
