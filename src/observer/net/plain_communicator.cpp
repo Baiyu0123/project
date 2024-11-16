@@ -315,14 +315,7 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
       // }
     }
 
-    char newline = '\n';
     s+='\n';
-    rc = writer_->writen(&newline, 1);
-    if (OB_FAIL(rc)) {
-      LOG_WARN("failed to send data to client. err=%s", strerror(errno));
-      sql_result->close();
-      return rc;
-    }
     rc = writer_->writen(s.data(), s.size());
     if (OB_FAIL(rc)) {
       LOG_WARN("failed to send data to client. err=%s", strerror(errno));
@@ -391,7 +384,7 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
       return rc;
     }
   }
-  rc = RC::SUCCESS;
+  return RC::SUCCESS;
 }
 
 RC PlainCommunicator::write_chunk_result(SqlResult *sql_result)
