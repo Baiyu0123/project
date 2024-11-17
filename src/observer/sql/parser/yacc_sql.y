@@ -327,9 +327,9 @@ vec_str :
       $$=new (std::vector<std::string>);
       $$->push_back($1);
     }
-    | vec_str ID {
+    | vec_str COMMA ID {
       $$=$1;
-      $$->push_back($2);
+      $$->push_back($3);
     }
 create_table_stmt:    /*create table 语句的语法解析树*/
     CREATE TABLE ID LBRACE attr_def attr_def_list RBRACE storage_format
