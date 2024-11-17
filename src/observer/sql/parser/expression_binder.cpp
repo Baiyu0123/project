@@ -124,7 +124,7 @@ RC ExpressionBinder::bind_star_expression(
     const vector<Table *> &all_tables = context_.query_tables();
     tables_to_wildcard.insert(tables_to_wildcard.end(), all_tables.begin(), all_tables.end());
   }
-
+  reverse(tables_to_wildcard.begin(),tables_to_wildcard.end());
   for (Table *table : tables_to_wildcard) {
     wildcard_fields(table, bound_expressions);
   }
