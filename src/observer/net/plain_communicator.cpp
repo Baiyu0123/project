@@ -273,7 +273,7 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
 {
   RC rc = RC::SUCCESS;
   Tuple *tuple = nullptr;
-  vector<pair<Tuple*,int>> tuples;
+  //vector<pair<Tuple*,int>> tuples;
   std::vector<std::pair<Expression*,bool> > *order_by=sql_result->get_order_by();
   int cnt=0;
   vector<string> v_s;
@@ -309,7 +309,7 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
     v_i.push_back(cnt++);
   }
   if (order_by!=nullptr&&order_by->size()!=0) {
-    sort(v_i.begin(),v_i.end(),[order_by,v_v](const int &x,const int &y) {
+    sort(v_i.begin(),v_i.end(),[order_by,&v_v](const int &x,const int &y) {
       for (int j=0;j<order_by->size();j++) {
         Value valuex=v_v[x][j];
         Value valuey=v_v[y][j];
