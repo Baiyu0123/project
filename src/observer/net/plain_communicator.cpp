@@ -281,11 +281,11 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
   vector<int> v_i;
   while (RC::SUCCESS == (rc = sql_result->next_tuple(tuple))) {
     assert(tuple != nullptr);
-    string s;
+    string s,ss;
     
     int cell_num = tuple->cell_num();
     for (int i = 0; i < cell_num; i++) {
-      if (i != 0) s+=" | ";
+      if (i != 0) s+=" | ",ss=" | "+ss;
       Value value;
       rc = tuple->cell_at(i, value);
       if (rc != RC::SUCCESS) {
@@ -293,7 +293,9 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
         sql_result->close();
         return rc;
       }
-      s+= value.to_string();
+      string tmp=value.to_string();
+      s+= tmp;
+      ss=tmp+ss;
     }
     s+='\n';
     if (order_by!=nullptr&&order_by->size()!=0) {
@@ -304,8 +306,8 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
         ve.push_back(valuex);
       }
       v_v.push_back(ve);
-    }
-    v_s.push_back(s);
+      v_s.push_back(ss);
+    } else v_s.push_back(s);
     v_i.push_back(cnt++);
   }
   if (order_by!=nullptr&&order_by->size()!=0) {
