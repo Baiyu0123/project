@@ -306,7 +306,7 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
         ve.push_back(valuex);
       }
       v_v.push_back(ve);
-      v_s.push_back(ss);
+      v_s.push_back(s);
     } else v_s.push_back(s);
     v_i.push_back(cnt++);
   }

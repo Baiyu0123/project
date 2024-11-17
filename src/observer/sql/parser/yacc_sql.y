@@ -627,14 +627,14 @@ rel_list:
     relation {
       $$ =$1;
     }
-    | relation COMMA rel_list {
-      if ($3 != nullptr) {
-        $$ = $3;
-        $$->first.insert($$->first.end(),$1->first.begin(),$1->first.end());
-        $$->second.insert($$->second.end(),$1->second.begin(),$1->second.end());
-        delete $1;
-      } else {
+    | rel_list COMMA relation {
+      if ($1 != nullptr) {
         $$ = $1;
+        $$->first.insert($$->first.end(),$3->first.begin(),$3->first.end());
+        $$->second.insert($$->second.end(),$3->second.begin(),$3->second.end());
+        delete $3;
+      } else {
+        $$ = $3;
       }
     }
     ;
