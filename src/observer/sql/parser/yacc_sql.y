@@ -147,6 +147,7 @@ bool to_bool(int x) {
                                              rela;
   std::pair<Expression*,bool> *                pr_eb;
   std::vector<std::pair<Expression*,bool>> *  v_pr_eb;
+  std::vector<std::string>*                    vec_str;
   
   char *                                     string;
   int                                        number;
@@ -169,6 +170,7 @@ bool to_bool(int x) {
 %type <rel_attr>            rel_attr
 %type <attr_infos>          attr_def_list
 %type <attr_info>           attr_def
+%type <vec_str>           vec_str
 %type <value_list>          value_list
 %type <condition_list>      where
 %type <v_pr_eb>             ord
@@ -296,16 +298,17 @@ desc_table_stmt:
     ;
 
 create_index_stmt:    /*create index 语句的语法解析树*/
-    CREATE INDEX ID ON ID LBRACE ID RBRACE
+    CREATE INDEX ID ON ID LBRACE vec_str RBRACE
     {
       $$ = new ParsedSqlNode(SCF_CREATE_INDEX);
       CreateIndexSqlNode &create_index = $$->create_index;
       create_index.index_name = $3;
+      
       create_index.relation_name = $5;
-      create_index.attribute_name = $7;
+      create_index.attribute_name.swap(*$7);
       free($3);
       free($5);
-      free($7);
+      //free($7);
     }
     ;
 
@@ -319,6 +322,15 @@ drop_index_stmt:      /*drop index 语句的语法解析树*/
       free($5);
     }
     ;
+vec_str :
+    ID {
+      $$=new (std::vector<std::string>);
+      $$->push_back($1);
+    }
+    | vec_str ID {
+      $$=$1;
+      $$->push_back($2);
+    }
 create_table_stmt:    /*create table 语句的语法解析树*/
     CREATE TABLE ID LBRACE attr_def attr_def_list RBRACE storage_format
     {

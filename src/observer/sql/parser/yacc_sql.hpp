@@ -145,12 +145,13 @@ union YYSTYPE
                                              rela;
   std::pair<Expression*,bool> *                pr_eb;
   std::vector<std::pair<Expression*,bool>> *  v_pr_eb;
+  std::vector<std::string>*                    vec_str;
   
   char *                                     string;
   int                                        number;
   float                                      floats;
 
-#line 154 "yacc_sql.hpp"
+#line 155 "yacc_sql.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
